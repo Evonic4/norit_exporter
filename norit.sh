@@ -111,7 +111,7 @@ done
 #START
 logger " "
 logger "start, ver "$ver
-su pushgateway -c '/usr/local/bin/pushgateway --web.listen-address=0.0.0.0:9097' -s /bin/bash 1>2 2>NULL &
+su pushgateway -c '/usr/local/bin/pushgateway --web.listen-address=0.0.0.0:9097' -s /bin/bash 1>/dev/null 2>/dev/null &
 sleep 5
 init;
 
