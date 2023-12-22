@@ -88,8 +88,8 @@ if [ -f $fhome$Z1".txt" ]; then
 			exit 0
 		else
 			logger "watcher str_col1="$str_col1" <3"
-			logger "end OK-1"
-			exit 1
+			#logger "end OK-1"
+			#exit 1
 		fi
 else
 	logger "watcher no file "$Z1".txt"
