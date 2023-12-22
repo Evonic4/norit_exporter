@@ -38,7 +38,7 @@ fi
 
 function logger()
 {
-local date1=`date '+ %Y-%m-%d %H:%M:%S'`
+local date1=$(date '+ %Y-%m-%d %H:%M:%S')
 echo $date1" norit: "$1
 }
 
@@ -102,6 +102,7 @@ for (( i=0;i<$all5;i++)); do
 	logger "great_five -----i="$i"-----"
 	next_five;
 	constructor_psql;
+	rm -f $fhome$i".txt"
 	$fhome$i".sh" &
 	$fhome"ntracker.sh" $i &
 done
