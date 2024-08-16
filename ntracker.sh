@@ -1,68 +1,109 @@
 #!/bin/bash
 export PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 fhome=/usr/share/norit/
-Z1=$1
+config_num=$1
+fPID=$fhome"pids/ntracker_"$config_num".txt"
 
-function init() 
+
+function init()
 {
-logger "init start"
+logger "init config_num="$config_num
 
-pushg_ip=$(sed -n 9"p" $fhome"sett.conf" | tr -d '\r')
-pushg_port=$(sed -n 10"p" $fhome"sett.conf" | tr -d '\r')
-job=$(sed -n 11"p" $fhome"sett.conf" | tr -d '\r')
-sec4=$(sed -n 12"p" $fhome"sett.conf" | tr -d '\r')
-max_time=$(sed -n 13"p" $fhome"sett.conf" | tr -d '\r')
-max_curl_time=$(sed -n 14"p" $fhome"sett.conf" | tr -d '\r')
-first5_str=16
-logger "init first5_str="$first5_str
+pushg_ip=$(sed -n 2"p" $fhome"sett.conf" | tr -d '\r')
+pushg_port=$(sed -n 3"p" $fhome"sett.conf" | tr -d '\r')
+job=$(sed -n 4"p" $fhome"sett.conf" | tr -d '\r')
 
-if [ "$max_time" -ge "$sec4" ]; then
-	logger "init maximum waiting time for a response from the database >= pause between polls !, exit"
-	exit 0
-fi
-max_nop=$(((max_time*60)/10))	#макс кол-во проверок
-logger "init max_nop="$max_nop
+config_name=$(sed -n $config_num"p" $fhome"confs2.txt" | tr -d '\r')
+script=$(sed -n 1"p" $fhome"conf/"$config_name | tr -d '\r')
+max_time_wdb=$(sed -n 3"p" $fhome"conf/"$config_name | tr -d '\r')
+max_time_wpg=$(sed -n 4"p" $fhome"conf/"$config_name | tr -d '\r')
+stolbc_all=$(sed -n 5"p" $fhome"conf/"$config_name | tr -d '\r')
+inst=$(sed -n 6"p" $fhome"conf/"$config_name | tr -d '\r')
+logger "init config_name="$config_name
+logger "init script="$script
+
+echo $stolbc_all | tr " " "\n" > $fhome"stolbc_"$config_num".txt"
+str_col3=$(grep -c '' $fhome"stolbc_"$config_num".txt")
+logger "init stolbc str_col3="$str_col3
+cat $fhome"stolbc_"$config_num".txt"
+
+[ "$str_col3" -gt "5" ] &&  logger "init stolbc ERROR str_col3>5" && exit 0
+[ "$str_col3" -eq "0" ] &&  logger "init stolbc ERROR str_col3=0" && exit 0
 }
 
 
 function logger()
 {
-local date1=`date '+ %Y-%m-%d %H:%M:%S'`
-echo $date1" ntracker_"$Z1": "$1
+local date1=$(date '+ %Y-%m-%d %H:%M:%S')
+echo $date1" ntracker_"$script": "$1
+}
+
+zanull ()
+{
+[ "$p1" == "" ] && p1="null"
+[ "$p2" == "" ] && p2="null"
+[ "$p3" == "" ] && p3="null"
+[ "$p4" == "" ] && p4="null"
+[ "$p5" == "" ] && p5="null"
+}
+
+
+stolbc ()
+{
+#for x in $(echo $(echo $stolbc_all | tr -d '\r') | tr " " "\n")
+
+if [ "$str_col3" -eq "1" ]; then
+	p1=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $1}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	count=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	zanull;
+	echo "norit "$count | curl -m $max_time_wpg --data-binary @- "http://"$pushg_ip":"$pushg_port"/metrics/job/"$job"/instance/"$inst"/"$(sed -n "1p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p1
+fi
+if [ "$str_col3" -eq "2" ]; then
+	p1=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $1}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p2=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	count=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $3}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	zanull;
+	echo "norit "$count | curl -m $max_time_wpg --data-binary @- "http://"$pushg_ip":"$pushg_port"/metrics/job/"$job"/instance/"$inst"/"$(sed -n "1p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p1"/"$(sed -n "2p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p2
+fi
+if [ "$str_col3" -eq "3" ]; then
+	p1=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $1}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p2=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p3=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $3}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	count=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $4}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	zanull;
+	echo "norit "$count | curl -m $max_time_wpg --data-binary @- "http://"$pushg_ip":"$pushg_port"/metrics/job/"$job"/instance/"$inst"/"$(sed -n "1p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p1"/"$(sed -n "2p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p2"/"$(sed -n "3p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p3
+fi
+if [ "$str_col3" -eq "4" ]; then
+	p1=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $1}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p2=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p3=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $3}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p4=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $4}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	count=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $5}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	zanull;
+	echo "norit "$count | curl -m $max_time_wpg --data-binary @- "http://"$pushg_ip":"$pushg_port"/metrics/job/"$job"/instance/"$inst"/"$(sed -n "1p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p1"/"$(sed -n "2p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p2"/"$(sed -n "3p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p3"/"$(sed -n "4p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p4
+fi
+if [ "$str_col3" -eq "5" ]; then
+	p1=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $1}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p2=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p3=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $3}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p4=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $4}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	p5=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $5}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	count=$(sed -n $i1"p" $fhome"otv/"$config_num"_3.txt" | awk -F"|" '{print $6}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
+	zanull;
+	echo "norit "$count | curl -m $max_time_wpg --data-binary @- "http://"$pushg_ip":"$pushg_port"/metrics/job/"$job"/instance/"$inst"/"$(sed -n "1p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p1"/"$(sed -n "2p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p2"/"$(sed -n "3p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p3"/"$(sed -n "4p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p4"/"$(sed -n "5p" $fhome"stolbc_"$config_num".txt" | tr -d '\r')"/"$p5
+fi
 }
 
 
 zapushgateway ()
 {
-logger "zapushgateway start"
-
-str_col2=$(grep -cv "^---" $fhome$Z1"3.txt")
+logger "zapushgateway"
+str_col2=$(grep -c '' $fhome"otv/"$config_num"_3.txt")
 logger "init str_col2="$str_col2
+
 for (( i1=1;i1<=$str_col2;i1++)); do
-	tschema=$(sed -n $i1"p" $fhome$Z1"3.txt" | awk -F"|" '{print $1}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
-	tn=$(sed -n $i1"p" $fhome$Z1"3.txt" | awk -F"|" '{print $2}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
-	rows_n=$(sed -n $i1"p" $fhome$Z1"3.txt" | awk -F"|" '{print $3}' | sed 's/^[ \t]*//;s/[ \t]*$//' | tr -d '\r')
-	echo "rows_n "$rows_n | curl -m $max_curl_time --data-binary @- "http://"$pushg_ip":"$pushg_port"/metrics/job/"$job"/instance/"$hostp"/db/"$db"/table_schema/"$tschema"/table_name/"$tn
+	stolbc;
 done
-}
-
-next_five ()
-{
-local mn=0
-mn=$((Z1*6))
-
-host=$(sed -n $((first5_str+mn))"p" $fhome"sett.conf" | tr -d '\r')
-port=$(sed -n $((first5_str+1+mn))"p" $fhome"sett.conf" | tr -d '\r')
-hostp=$host":"$port
-db=$(sed -n $((first5_str+2+mn))"p" $fhome"sett.conf" | tr -d '\r')
-user=$(sed -n $((first5_str+3+mn))"p" $fhome"sett.conf" | tr -d '\r')
-pass=$(sed -n $((first5_str+4+mn))"p" $fhome"sett.conf" | tr -d '\r')
-
-logger "next_five host="$host
-logger "next_five port="$port
-logger "next_five db="$db
-logger "next_five user="$user
-logger "next_five pass=****"
 }
 
 
@@ -70,55 +111,46 @@ watcher ()
 {
 logger "watcher start"
 
-if [ -f $fhome$Z1".txt" ]; then
-		sed '1,2d' $fhome$Z1".txt" > $fhome$Z1"2.txt"
-		str_col1=$(grep -cv "^RRRR---" $fhome$Z1"2.txt")
+if [ -f $fhome"otv/"$config_num".txt" ]; then
+		sed '1,2d' $fhome"otv/"$config_num".txt" > $fhome"otv/"$config_num"_2.txt"
+		str_col1=$(grep -c '' $fhome"otv/"$config_num"_2.txt")
 		logger "watcher str_col1="$str_col1
 		if [ "$str_col1" -gt "3" ]; then
-			sed $((str_col1-2))',$d' $fhome$Z1"2.txt" > $fhome$Z1"3.txt"
-			#str_col1=$(grep -cv "^RRRR---" "./2.txt"); [ "$str_col1" -gt "2" ] && sed $((str_col1-2))',$d' "./2.txt"
+			sed $((str_col1-2))',$d' $fhome"otv/"$config_num"_2.txt" > $fhome"otv/"$config_num"_3.txt"
 			
-			next_five;
 			zapushgateway;
-			mv -f $fhome$Z1".txt" $fhome$Z1".txt.old"
-			mv -f $fhome$Z1"2.txt" $fhome$Z1"2.txt.old"
-			mv -f $fhome$Z1"3.txt" $fhome$Z1"3.txt.old"
+			mv -f $fhome"otv/"$config_num".txt" $fhome"otv/"$config_num".txt.old"
+			mv -f $fhome"otv/"$config_num"_2.txt" $fhome"otv/"$config_num"_2.txt.old"
+			mv -f $fhome"otv/"$config_num"_3.txt" $fhome"otv/"$config_num"_3.txt.old"
 			
-			logger "end OK-0"
-			exit 0
+			logger "watcher end OK-0"
 		else
 			logger "watcher str_col1="$str_col1" <3"
-			#logger "end OK-1"
-			#exit 1
 		fi
 else
-	logger "watcher no file "$Z1".txt"
+	logger "watcher no file "$config_num".txt"
 fi
-
 }
 
 
+
 #START
+PID=$$
+echo $PID > $fPID
+
 logger " "
 logger "start"
 init;
 
-nop=0
-while true
-do
-logger "sleep 10"
-sleep 10
-logger "---->"
-nop=$((nop+1))
+#while true
+#do
+sleep $max_time_wdb
 watcher;
 
-if [ "$nop" -gt "$max_nop" ]; then
-	logger "ERROR: time is over"
-	cpid=$(sed -n 1"p" $fhome$Z1".pid" | tr -d '\r')
-	killall $Z1".sh"
-	kill -9 $cpid
-	mv -f $fhome$Z1".pid" $fhome$Z1".pid.old"
-	exit 0
-fi
+logger "OK time is over"
+cpid=$(sed -n 1"p" $fPID | tr -d '\r')
+#killall $Z1".sh"
+kill -9 $cpid
+#done
 
-done
+rm -f $fPID
