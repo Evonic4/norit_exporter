@@ -55,7 +55,6 @@ cat $fhome"confs2.txt" | sort -n > $fhome"confs2.txt"
 
 touch $fhome"confs3.txt"
 for (( i1=1;i1<=$str_col1;i1++)); do
-	basename $(echo $(sed -n $i1"p" $fhome"confs1.txt" | tr -d '\r')) >> $fhome"confs2.txt"
 	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$i1".sh"
 	$fhome"norit.sh" $i1 &
 done
