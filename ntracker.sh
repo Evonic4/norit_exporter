@@ -35,7 +35,7 @@ cat $fhome"stolbc_"$config_num".txt"
 function logger()
 {
 local date1=$(date '+ %Y-%m-%d %H:%M:%S')
-echo $date1" ntracker_"$script": "$1
+echo $date1" ntracker_"$config_num": "$1
 }
 
 zanull ()
