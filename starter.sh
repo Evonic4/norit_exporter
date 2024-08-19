@@ -47,7 +47,7 @@ logger "find confs"
 find $fhome"conf/" -maxdepth 1 -type f -name '*.config' > $fhome"confs1.txt"
 str_col1=$(grep -c '' $fhome"confs1.txt")
 logger "str_col1="$str_col1
-echo > $fhome"confs2.txt"
+touch $fhome"confs2.txt"
 for (( i1=1;i1<=$str_col1;i1++)); do
 	basename $(echo $(sed -n $i1"p" $fhome"confs1.txt" | tr -d '\r')) >> $fhome"confs2.txt"
 	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$i1".sh"
