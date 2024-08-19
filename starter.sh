@@ -53,13 +53,14 @@ for (( i1=1;i1<=$str_col1;i1++)); do
 done
 cat $fhome"confs2.txt" | sort -n > $fhome"confs2.txt"
 
+logger "confs2.txt list"
+cat $fhome"confs2.txt"
+
 touch $fhome"confs3.txt"
 for (( i1=1;i1<=$str_col1;i1++)); do
 	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$i1".sh"
 	$fhome"norit.sh" $i1 &
 done
-logger "confs2.txt list"
-cat $fhome"confs2.txt"
 
 while true
 do
