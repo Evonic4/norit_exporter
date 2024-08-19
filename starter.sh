@@ -51,12 +51,15 @@ touch $fhome"confs2.txt"
 for (( i1=1;i1<=$str_col1;i1++)); do
 	basename $(echo $(sed -n $i1"p" $fhome"confs1.txt" | tr -d '\r')) >> $fhome"confs2.txt"
 done
-cat $fhome"confs2.txt" | sort -n > $fhome"confs2.txt"
 
 logger "confs2.txt list"
 cat $fhome"confs2.txt"
 
-touch $fhome"confs3.txt"
+cat $fhome"confs2.txt" | sort -n > $fhome"confs3.txt"
+
+logger "confs3.txt list"
+cat $fhome"confs3.txt"
+
 for (( i1=1;i1<=$str_col1;i1++)); do
 	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$i1".sh"
 	$fhome"norit.sh" $i1 &

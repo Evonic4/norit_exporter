@@ -1,6 +1,5 @@
 #!/bin/bash
 export PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
-ver="v0.2"
 fhome=/usr/share/norit/
 fPID=$fhome"pids/norit_pid.txt"
 cd $fhome
@@ -10,7 +9,7 @@ config_num=$1
 function init() 
 {
 logger "init config_num="$config_num
-config_name=$(sed -n $config_num"p" $fhome"confs2.txt" | tr -d '\r')
+config_name=$(sed -n $config_num"p" $fhome"confs3.txt" | tr -d '\r')
 script=$(sed -n 1"p" $fhome"conf/"$config_name | tr -d '\r')
 sec4=$(sed -n 2"p" $fhome"conf/"$config_name | tr -d '\r')
 max_time_wdb=$(sed -n 3"p" $fhome"conf/"$config_name | tr -d '\r')
@@ -39,7 +38,7 @@ PID=$$
 echo $PID > $fPID
 
 logger " "
-logger "start, ver "$ver
+logger "start"
 sleep 1
 init;
 
