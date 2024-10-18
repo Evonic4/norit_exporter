@@ -7,13 +7,13 @@ fPID=$fhome"pids/ntracker_"$config_num".txt"
 
 function init()
 {
-logger "init config_num="$config_num
+logger "init config="$config_num".config"
 
 pushg_ip=$(sed -n 2"p" $fhome"sett.conf" | tr -d '\r')
 pushg_port=$(sed -n 3"p" $fhome"sett.conf" | tr -d '\r')
 job=$(sed -n 4"p" $fhome"sett.conf" | tr -d '\r')
 
-config_name=$(sed -n $config_num"p" $fhome"confs3.txt" | tr -d '\r')
+config_name=$config_num".config"
 script=$(sed -n 1"p" $fhome"conf/"$config_name | tr -d '\r')
 max_time_wdb=$(sed -n 3"p" $fhome"conf/"$config_name | tr -d '\r')
 max_time_wpg=$(sed -n 4"p" $fhome"conf/"$config_name | tr -d '\r')
@@ -115,7 +115,7 @@ if [ -f $fhome"otv/"$config_num".txt" ]; then
 		sed '1,2d' $fhome"otv/"$config_num".txt" > $fhome"otv/"$config_num"_2.txt"
 		str_col1=$(grep -c '' $fhome"otv/"$config_num"_2.txt")
 		logger "watcher str_col1="$str_col1
-		if [ "$str_col1" -gt "3" ]; then
+		if [ "$str_col1" -gt "1" ]; then
 			sed $((str_col1-2))',$d' $fhome"otv/"$config_num"_2.txt" > $fhome"otv/"$config_num"_3.txt"
 			
 			zapushgateway;

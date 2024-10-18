@@ -8,8 +8,8 @@ config_num=$1
 
 function init() 
 {
-logger "init config_num="$config_num
-config_name=$(sed -n $config_num"p" $fhome"confs3.txt" | tr -d '\r')
+logger "init config="$config_num".config"
+config_name=$config_num".config"
 script=$(sed -n 1"p" $fhome"conf/"$config_name | tr -d '\r')
 sec4=$(sed -n 2"p" $fhome"conf/"$config_name | tr -d '\r')
 max_time_wdb=$(sed -n 3"p" $fhome"conf/"$config_name | tr -d '\r')

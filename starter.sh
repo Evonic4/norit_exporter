@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH="$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
-ver="v0.2"
+ver="v0.3"
 fhome=/usr/share/norit/
 
 
@@ -62,7 +62,8 @@ cat $fhome"confs3.txt"
 
 for (( i1=1;i1<=$str_col1;i1++)); do
 	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$i1".sh"
-	$fhome"norit.sh" $i1 &
+	#$fhome"norit.sh" $i1 &
+	$fhome"norit.sh" $(sed -n $i1"p" $fhome"confs3.txt" | awk -F"." '{print $1}' | tr -d '\r') &
 done
 
 while true
