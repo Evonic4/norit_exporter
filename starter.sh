@@ -60,10 +60,13 @@ cat $fhome"confs2.txt" | sort -n > $fhome"confs3.txt"
 logger "confs3.txt list"
 cat $fhome"confs3.txt"
 
-for (( i1=1;i1<=$str_col1;i1++)); do
-	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$i1".sh"
+#for (( i1=1;i1<=$str_col1;i1++)); do
+for x2 in $(cat $fhome"confs3.txt"|grep -v \#|tr -d '\r'); do
+	x3=$(echo $x2 | awk -F"." '{print $1}'|tr -d '\r')
+	logger "x3="$x3
+	cp -f $fhome"ntracker.sh" $fhome"ntracker_"$x3".sh"
 	#$fhome"norit.sh" $i1 &
-	$fhome"norit.sh" $(sed -n $i1"p" $fhome"confs3.txt" | awk -F"." '{print $1}' | tr -d '\r') &
+	$fhome"norit.sh" $x3 &
 done
 
 while true

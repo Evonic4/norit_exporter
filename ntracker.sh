@@ -102,6 +102,7 @@ str_col2=$(grep -c '' $fhome"otv/"$config_num"_3.txt")
 logger "init str_col2="$str_col2
 
 for (( i1=1;i1<=$str_col2;i1++)); do
+	logger "stolbc i1="$i1
 	stolbc;
 done
 }
@@ -116,7 +117,10 @@ if [ -f $fhome"otv/"$config_num".txt" ]; then
 		str_col1=$(grep -c '' $fhome"otv/"$config_num"_2.txt")
 		logger "watcher str_col1="$str_col1
 		if [ "$str_col1" -gt "1" ]; then
-			sed $((str_col1-2))',$d' $fhome"otv/"$config_num"_2.txt" > $fhome"otv/"$config_num"_3.txt"
+			#sed $((str_col1-1))',$d' $fhome"otv/"$config_num"_2.txt" > $fhome"otv/"$config_num"_3.txt"
+			
+			#взять первую строку
+			cat $fhome"otv/"$config_num"_2.txt"| head -n $((str_col1-1)) > $fhome"otv/"$config_num"_3.txt"
 			
 			zapushgateway;
 			mv -f $fhome"otv/"$config_num".txt" $fhome"otv/"$config_num".txt.old"
